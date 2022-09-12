@@ -23,11 +23,12 @@ Most-likely, your prior platform hashed the user passwords using a different alg
 3. Your application sign in screen gathers the email address and password from the user
 4. Your middleware function checks to see if the user is `migrated` (meaning, the password has been migrated)
   -  If YES: the user is passed on to the normal Supabase [signIn()](https://supabase.com/docs/reference/javascript/auth-signin) flow
-  -  If NO: then your middleware function runs the old password hashing algorithm against the password entered by the user to see if it matches the `old_password_hash`
-    - If it DOES NOT MATCH: the sign in is rejected
-    - If it MATCHES: 
-      - The current password entered by the user is written to Supabase (GoTrue) [See update()](https://supabase.com/docs/reference/javascript/auth-update#update-password-for-authenticated-user)
-      - The **old password hash** field is removed from the user, thus indicated that this user's password is now `migrated`
+  -  If NO: then your middleware function validates the old password hashing algorithm against the password entered by the user to see if it matches the `old_password_hash`
+5. **validate password function**
+  - If it DOES NOT MATCH: the sign in is rejected
+  - If it MATCHES: 
+    - The current password entered by the user is written to Supabase (GoTrue) [See update()](https://supabase.com/docs/reference/javascript/auth-update#update-password-for-authenticated-user)
+    - The **old password hash** field is removed from the user, thus indicated that this user's password is now `migrated`
 
 #### Where to store the **old password hash**
 You can store the **old password hash** in any of:
