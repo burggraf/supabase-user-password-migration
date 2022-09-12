@@ -19,12 +19,12 @@ Most-likely, your prior platform hashed the user passwords using a different alg
 
 ### The workflow for a single user
 -  The user was migrated from platform A to Supabase, `old_password_hash` as stored as 'XXXX-XXXX-XXXX'
--  After some time, the user tries to log into your Supabase application
--  Your application login screen gathers the email address and password from the user
+-  After some time, the user tries to sign into your Supabase application
+-  Your application sign in screen gathers the email address and password from the user
 -  Your middleware function checks to see if the user is `migrated` (meaning, the password has been migrated)
   -  If YES: the user is passed on to the normal Supabase [signIn()](https://supabase.com/docs/reference/javascript/auth-signin) flow
   -  If NO: then your middleware function runs the old password hashing algorithm against the password entered by the user to see if it matches the `old_password_hash`
-    - If it DOES NOT MATCH: the login is rejected
+    - If it DOES NOT MATCH: the sign in is rejected
     - If it MATCHES: 
       - The current password entered by the user is written to Supabase (GoTrue) [See update()](https://supabase.com/docs/reference/javascript/auth-update#update-password-for-authenticated-user)
       - The **old password hash** field is removed from the user, thus indicated that this user's password is now `migrated`
@@ -52,17 +52,17 @@ This function should be created and tested separately with a known account that 
 You'll need knowledge of the old hashing algorithm in order to make this validation function work.
 
 ## Example Implementation
-Let's say I've migrated all my users to Supabase, and I've created a table called `old_password_hashes` with a record for each user.  Now, as an un-migrated user I log in for the first time.  I enter my email address and password in the app's **Sign In** screen.
+Let's say I've migrated all my users to Supabase, and I've created a table called `old_password_hashes` with a record for each user.  Now, as an un-migrated user I sign in for the first time.  I enter my email address and password in the app's **Sign In** screen.
 
 - `email` and `password` are sent to the middle tier
   - the middle tier looks up the user in the `old_password_hashes` table
     - NOT FOUND? then send `email` and `password` to the standard `signIn()` function (see **note** below)
     - FOUND? then send send `password` and `old_password_hash` to the **password validation function**
-      - FAILED? reject the login
-      - SUCCESS? store the new password and log the user in
+      - FAILED? reject the sign in
+      - SUCCESS? store the new password and sign the user in
         - call `update()` to update the user's password in Supabase
         - delete the corresponding `old_password_hash` record for this user
-        - call `signIn()` to log the user in (see **note** below)
+        - call `signIn()` to sign the user in (see **note** below)
         
 **Note:** For this last step, signing the user in, this is a client-side function.  Since all of this processing has been done on the server side, you'll want to return control back to the client side here and let the client side call `signIn()` directly.  So your middleware function should simply return TRUE or FALSE back to your client application.  FALSE means the sign in failed (missing user or bad password).  TRUE means the user's password was either already migrated, or it was just successfuly migrated (it doesn't matter).  If the result is TRUE, we call `signIn()` from the client to complete the sign in process.
 
