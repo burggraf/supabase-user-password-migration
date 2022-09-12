@@ -18,10 +18,10 @@ It's far more likely that your prior platform hashed the user passwords.  If the
 Most-likely, your prior platform hashed the user passwords using a different algorithm than Supabase (GoTrue) uses.  In this (most common) case, you should migrate your users to Supabase with a random password, but also store the **old password hash** in your Supabase database as a temporary step.  Users who have an **old password hash** in their user records are considered `not yet migrated`.  Once the password has been migrated to the Supabase (GoTrue) format, you will delete the **old password hash** and the user will be considered `migrated`.
 
 ### The workflow for a single user
--  The user was migrated from platform A to Supabase, `old_password_hash` as stored as 'XXXX-XXXX-XXXX'
--  After some time, the user tries to sign into your Supabase application
--  Your application sign in screen gathers the email address and password from the user
--  Your middleware function checks to see if the user is `migrated` (meaning, the password has been migrated)
+1. The user was migrated from platform A to Supabase, `old_password_hash` as stored as 'XXXX-XXXX-XXXX'
+2. After some time, the user tries to sign into your Supabase application
+3. Your application sign in screen gathers the email address and password from the user
+4. Your middleware function checks to see if the user is `migrated` (meaning, the password has been migrated)
   -  If YES: the user is passed on to the normal Supabase [signIn()](https://supabase.com/docs/reference/javascript/auth-signin) flow
   -  If NO: then your middleware function runs the old password hashing algorithm against the password entered by the user to see if it matches the `old_password_hash`
     - If it DOES NOT MATCH: the sign in is rejected
