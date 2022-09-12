@@ -56,7 +56,7 @@ Let's say I've migrated all my users to Supabase, and I've created a table calle
 
 - `email` and `password` are sent to the middle tier
   - the middle tier looks up the user in the `old_password_hashes` table
-    - NOT FOUND? then send `email` and `password` to the standard `signIn()` function (see **note below)
+    - NOT FOUND? then send `email` and `password` to the standard `signIn()` function (see **note** below)
     - FOUND? then send send `password` and `old_password_hash` to the **password validation function**
       - FAILED? reject the login
       - SUCCESS? store the new password and log the user in
