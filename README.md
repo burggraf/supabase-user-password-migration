@@ -35,4 +35,19 @@ You can store the **old password hash** in any of:
 - The [user's metadata](https://supabase.com/docs/reference/javascript/auth-update#update-a-users-metadata) (note: this is accessible / readable by the user by default and is stored in `auth.users.raw_user_meta_data`)
 - User's app metadata (`auth.users.raw_app_meta_data`) (note: this field is not accessible / readable by the user)
 
+## Requirements
+In order to create this seamless password migration system, you will need the following:
+- user accounts converted to Supabase (GoTrue)
+- a stored (temporary) `old_password_hash` field containing the user's password hash from the prior platform
+- knowledge of the algorithm used to hash the passwords on the prior platform
+- a **validation function** to validate the password against the `old_password_hash`
+- a middleware tier (this can be anywhere -- Supabase Edge Functions (Deno), a hosted NodeJS application, or any server-based function tier)
+
+### The Validation Function
+This function should be created and tested separately with a known account that contains a password you know.  All this function needs to do is to:
+- accept a password (entered by the user) and the `old_password_hash` for the account
+- return **TRUE** if the password hash matches the `old_password_hash`
+- return **FALSE** if the password hash does not match the `old_password_hash`
+
+You'll need knowledge of the old hashing algorithm in order to make this validation function work.
 
