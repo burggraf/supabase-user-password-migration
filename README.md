@@ -54,15 +54,16 @@ You'll need knowledge of the old hashing algorithm in order to make this validat
 ## Example Implementation
 Let's say I've migrated all my users to Supabase, and I've created a table called `old_password_hashes` with a record for each user.  Now, as an un-migrated user I sign in for the first time.  I enter my email address and password in the app's **Sign In** screen.
 
-- `email` and `password` are sent to the middle tier
-  - the middle tier looks up the user in the `old_password_hashes` table
-    - NOT FOUND? then send `email` and `password` to the standard `signIn()` function (see **note** below)
-    - FOUND? then send send `password` and `old_password_hash` to the **password validation function**
-      - FAILED? reject the sign in
-      - SUCCESS? store the new password and sign the user in
-        - call `update()` to update the user's password in Supabase
-        - delete the corresponding `old_password_hash` record for this user
-        - call `signIn()` to sign the user in (see **note** below)
+1. `email` and `password` are sent to the middle tier:
+2. the middle tier looks up the user in the `old_password_hashes` table
+  - NOT FOUND? then send `email` and `password` to the standard `signIn()` function (see **note** below)
+  - FOUND? then send send `password` and `old_password_hash` to the **password validation function**
+3. **password validation function**
+  - FAILED? reject the sign in
+  - SUCCESS? store the new password and sign the user in
+    - call `update()` to update the user's password in Supabase
+    - delete the corresponding `old_password_hash` record for this user
+    - call `signIn()` to sign the user in (see **note** below)
         
 **Note:** For this last step, signing the user in, this is a client-side function.  Since all of this processing has been done on the server side, you'll want to return control back to the client side here and let the client side call `signIn()` directly.  So your middleware function should simply return TRUE or FALSE back to your client application.  FALSE means the sign in failed (missing user or bad password).  TRUE means the user's password was either already migrated, or it was just successfuly migrated (it doesn't matter).  If the result is TRUE, we call `signIn()` from the client to complete the sign in process.
 
