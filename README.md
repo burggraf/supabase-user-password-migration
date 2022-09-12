@@ -55,9 +55,9 @@ You'll need knowledge of the old hashing algorithm in order to make this validat
 Let's say I've migrated all my users to Supabase, and I've created a table called `old_password_hashes` with a record for each user.  Now, as an un-migrated user I log in for the first time.  I enter my email address and password in the app's **Sign In** screen.
 
 - `email` and `password` are sent to the middle tier
- - the middle tier looks up the user in the `old_password_hashes` table
-  - NOT FOUND? then send `email` and `password` to the standard `signIn()` function
-  - FOUND? then send send `password` and `old_password_hash` to the **password validation function**
-   - SUCCESS?  
-   - FAILED? reject the login
+  - the middle tier looks up the user in the `old_password_hashes` table
+    - NOT FOUND? then send `email` and `password` to the standard `signIn()` function
+    - FOUND? then send send `password` and `old_password_hash` to the **password validation function**
+      - SUCCESS?  
+      - FAILED? reject the login
 
