@@ -28,3 +28,11 @@ Most-likely, your prior platform hashed the user passwords using a different alg
     - If it MATCHES: 
       - The current password entered by the user is written to Supabase (GoTrue) [See update()](https://supabase.com/docs/reference/javascript/auth-update#update-password-for-authenticated-user)
       - The **old password hash** field is removed from the user, thus indicated that this user's password is now `migrated`
+
+#### Where to store the **old password hash**
+You can store the **old password hash** in any of:
+- A simple PostgreSQL table (userid uuid primary key, password_hash text)
+- The [user's metadata](https://supabase.com/docs/reference/javascript/auth-update#update-a-users-metadata) (note: this is accessible / readable by the user by default and is stored in `auth.users.raw_user_meta_data`)
+- User's app metadata (`auth.users.raw_app_meta_data`) (note: this field is not accessible / readable by the user)
+
+
